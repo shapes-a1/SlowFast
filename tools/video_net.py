@@ -15,7 +15,7 @@ import slowfast.utils.distributed as du
 from slowfast.utils import logging
 from slowfast.utils import misc
 from slowfast.datasets import cv2_transform
-from slowfast.models import model_builder
+from slowfast.models import build_model
 from slowfast.datasets.cv2_transform import scale
 
 logger = logging.get_logger(__name__)
@@ -25,9 +25,9 @@ np.random.seed(20)
 class VideoReader(object):
 
     def __init__(self, cfg):
-        self.source = cfg.DEMO.DATA_SOURCE
-        self.display_width = cfg.DEMO.DISPLAY_WIDTH
-        self.display_height = cfg.DEMO.DISPLAY_HEIGHT
+        self.source = cfg.VIDEO_DEMO.DATA_SOURCE
+        self.display_width = cfg.VIDEO_DEMO.DISPLAY_WIDTH
+        self.display_height = cfg.VIDEO_DEMO.DISPLAY_HEIGHT
 
     def __iter__(self):
         self.cap = cv2.VideoCapture(self.source)
@@ -69,9 +69,9 @@ def video(cfg):
     logger.info("Run demo with config:")
     logger.info(cfg)
     # Build the video model and print model statistics.
-    model = model_builder.build_model(cfg)
+    model = build_model(cfg)
     model.eval()
-    misc.log_model_info(model, cfg, is_train=False)
+    misc.log_model_info(model)
 
     # Load a checkpoint to test if applicable.
     if cfg.TEST.CHECKPOINT_FILE_PATH != "":
@@ -91,28 +91,28 @@ def video(cfg):
 
     if cfg.DETECTION.ENABLE:
         # Load object detector from detectron2
-        dtron2_cfg_file = cfg.DEMO.DETECTRON2_OBJECT_DETECTION_MODEL_CFG
+        dtron2_cfg_file = cfg.VIDEO_DEMO.DETECTRON2_OBJECT_DETECTION_MODEL_CFG
         dtron2_cfg = get_cfg()
         dtron2_cfg.merge_from_file(model_zoo.get_config_file(dtron2_cfg_file))
         dtron2_cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = .5
-        dtron2_cfg.MODEL.WEIGHTS = cfg.DEMO.DETECTRON2_OBJECT_DETECTION_MODEL_WEIGHTS
+        dtron2_cfg.MODEL.WEIGHTS = cfg.VIDEO_DEMO.DETECTRON2_OBJECT_DETECTION_MODEL_WEIGHTS
         object_predictor = DefaultPredictor(dtron2_cfg)
         # Load the labels of AVA dataset
-        with open(cfg.DEMO.LABEL_FILE_PATH) as f:
+        with open(cfg.VIDEO_DEMO.LABEL_FILE_PATH) as f:
             labels = f.read().split('\n')[:-1]
         palette = np.random.randint(64, 128, (len(labels), 3)).tolist()
         boxes = []
     else:
         # Load the labels of Kinectics-400 dataset
-        labels_df = pd.read_csv(cfg.DEMO.LABEL_FILE_PATH)
+        labels_df = pd.read_csv(cfg.VIDEO_DEMO.LABEL_FILE_PATH)
         labels = labels_df['name'].values
 
     frame_provider = VideoReader(cfg)
     seq_len = cfg.DATA.NUM_FRAMES * cfg.DATA.SAMPLING_RATE
     frames = []
     pred_labels = []
-    s = 0.
-    for able_to_read, frame in frame_provider:
+    # s = 0.
+    for idx, (able_to_read, frame) in enumerate(frame_provider):
         if not able_to_read:
             # when reaches the end frame, clear the buffer and continue to the next one.
             frames = []
@@ -221,7 +221,7 @@ def video(cfg):
             # frames.pop(0)
             # option 2: empty the buffer
             frames = []
-            s = time() - start
+            # s = time() - start
 
         if cfg.DETECTION.ENABLE and pred_labels and boxes.any():
             for box, box_labels in zip(boxes.astype(int), pred_labels):
@@ -253,15 +253,17 @@ def video(cfg):
                             fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                             fontScale=.65, color=(0, 235, 0), thickness=2)
 
-        # Display prediction speed
-        cv2.putText(frame, 'Speed: {:.2f}s'.format(s), (10, 25),
-                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                    fontScale=.65, color=(0, 235, 0), thickness=2)
+        # # Display prediction speed
+        # cv2.putText(frame, 'Speed: {:.2f}s'.format(s), (10, 25),
+        #             fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+        #             fontScale=.65, color=(0, 235, 0), thickness=2)
         # Display the frame
-        cv2.imshow('SlowFast', frame)
-        # hit Esc to quit the demo.
-        key = cv2.waitKey(1)
-        if key == 27:
-            break
+        # cv2.imshow('SlowFast', frame)
+        cv2.imwrite(os.path.join(cfg.OUTPUT_DIR, 'frame{}.png'.format(idx)), frame)
+
+        # # hit Esc to quit the demo.
+        # key = cv2.waitKey(1)
+        # if key == 27:
+        #     break
 
     frame_provider.clean()

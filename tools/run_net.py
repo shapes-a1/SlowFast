@@ -106,7 +106,7 @@ def main():
     cfg = load_config(args)
 
     # Perform predicting.
-    if cfg.DEMO.ENABLE:
+    if cfg.VIDEO_DEMO.ENABLE:
         func = video
     else:
         raise ValueError('Unresolved run mode!')
