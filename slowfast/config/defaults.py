@@ -433,6 +433,32 @@ _C.AVA.GROUNDTRUTH_FILE = "ava_val_v2.2.csv"
 _C.AVA.IMG_PROC_BACKEND = "cv2"
 
 
+# ===========================================
+# VIDEO DEMO OPTIONS
+
+_C.VIDEO_DEMO = CfgNode()
+
+_C.VIDEO_DEMO.ENABLE = False
+
+_C.VIDEO_DEMO.LABEL_FILE_PATH = ""
+
+# Always set to "" for video files
+_C.VIDEO_DEMO.DATA_SOURCE = ""
+
+_C.VIDEO_DEMO.DISPLAY_WIDTH = 0
+
+_C.VIDEO_DEMO.DISPLAY_HEIGHT = 0
+
+_C.VIDEO_DEMO.DETECTRON2_OBJECT_DETECTION_MODEL_CFG = ""
+
+_C.VIDEO_DEMO.DETECTRON2_OBJECT_DETECTION_MODEL_WEIGHTS = ""
+
+
+
+
+# ===========================================
+
+
 def _assert_and_infer_cfg(cfg):
     # BN assertions.
     if cfg.BN.USE_PRECISE_STATS:
