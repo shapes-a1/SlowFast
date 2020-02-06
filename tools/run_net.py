@@ -11,8 +11,7 @@ import slowfast.utils.checkpoint as cu
 import slowfast.utils.multiprocessing as mpu
 from slowfast.config.defaults import get_cfg
 
-from test_net import test
-from train_net import train
+from tools.video_net import video
 
 
 def parse_args():
@@ -31,7 +30,7 @@ def parse_args():
             overwrites the config loaded from file.
         """
     parser = argparse.ArgumentParser(
-        description="Provide SlowFast video training and testing pipeline."
+        description="Provide SlowFast video demo pipeline."
     )
     parser.add_argument(
         "--shard_id",
@@ -106,46 +105,29 @@ def main():
     args = parse_args()
     cfg = load_config(args)
 
-    # Perform training.
-    if cfg.TRAIN.ENABLE:
-        if cfg.NUM_GPUS > 1:
-            torch.multiprocessing.spawn(
-                mpu.run,
-                nprocs=cfg.NUM_GPUS,
-                args=(
-                    cfg.NUM_GPUS,
-                    train,
-                    args.init_method,
-                    cfg.SHARD_ID,
-                    cfg.NUM_SHARDS,
-                    cfg.DIST_BACKEND,
-                    cfg,
-                ),
-                daemon=False,
-            )
-        else:
-            train(cfg=cfg)
+    # Perform predicting.
+    if cfg.DEMO.ENABLE:
+        func = video
+    else:
+        raise ValueError('Unresolved run mode!')
 
-    # Perform multi-clip testing.
-    if cfg.TEST.ENABLE:
-        if cfg.NUM_GPUS > 1:
-            torch.multiprocessing.spawn(
-                mpu.run,
-                nprocs=cfg.NUM_GPUS,
-                args=(
-                    cfg.NUM_GPUS,
-                    test,
-                    args.init_method,
-                    cfg.SHARD_ID,
-                    cfg.NUM_SHARDS,
-                    cfg.DIST_BACKEND,
-                    cfg,
-                ),
-                daemon=False,
-            )
-        else:
-            test(cfg=cfg)
-
+    if cfg.NUM_GPUS > 1:
+        torch.multiprocessing.spawn(
+            mpu.run,
+            nprocs=cfg.NUM_GPUS,
+            args=(
+                cfg.NUM_GPUS,
+                func,
+                args.init_method,
+                cfg.SHARD_ID,
+                cfg.NUM_SHARDS,
+                cfg.DIST_BACKEND,
+                cfg,
+            ),
+            daemon=False,
+        )
+    else:
+        func(cfg=cfg)
 
 if __name__ == "__main__":
     torch.multiprocessing.set_start_method("forkserver")
