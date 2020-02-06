@@ -453,9 +453,6 @@ _C.VIDEO_DEMO.DETECTRON2_OBJECT_DETECTION_MODEL_CFG = ""
 
 _C.VIDEO_DEMO.DETECTRON2_OBJECT_DETECTION_MODEL_WEIGHTS = ""
 
-
-
-
 # ===========================================
 
 
