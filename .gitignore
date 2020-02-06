@@ -105,3 +105,6 @@ venv.bak/
 
 # IDE (pycharm)
 .idea/
+
+# trained models
+checkpoints/
