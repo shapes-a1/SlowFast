@@ -105,7 +105,6 @@ def log_model_info(model):
         is_train (bool): if True, log info for training. Otherwise,
             log info for testing.
     """
-    logger.info("Model:\n{}".format(model))
     logger.info("Params: {:,}".format(params_count(model)))
     logger.info("Mem: {:,} MB".format(gpu_mem_usage()))
 
