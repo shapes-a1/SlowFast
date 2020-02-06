@@ -3,36 +3,29 @@
 ## Requirements
 - Python >= 3.6
 - Numpy
-- PyTorch 1.3
+- PyTorch >= 1.3
 - [fvcore](https://github.com/facebookresearch/fvcore/): `pip install 'git+https://github.com/facebookresearch/fvcore'`
 - [torchvision](https://github.com/pytorch/vision/) that matches the PyTorch installation.
   You can install them together at [pytorch.org](https://pytorch.org) to make sure of this.
 - simplejson: `pip install simplejson`
 - GCC >= 4.9
-- PyAV: `conda install av -c conda-forge`
-- ffmpeg (4.0 is prefereed, will be installed along with PyAV)
+- ffmpeg
 - PyYaml: (will be installed along with fvcore)
-- OpenCV: `pip install opencv-python`
+- OpenCV: `pip install opencv-python` or build from source w/ ffmpeg support (preferred)
 - [Detectron2](https://github.com/facebookresearch/detectron2): 
 ```
-    pip install -U torch torchvision cython
+    pip install -U cython
     pip install -U 'git+https://github.com/facebookresearch/fvcore.git' 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
     git clone https://github.com/facebookresearch/detectron2 detectron2_repo
     pip install -e detectron2_repo
     You could find more details at https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md
 ```
 
-## Pytorch
-Please follow PyTorch official instructions to install from source:
-```
-git clone --recursive https://github.com/pytorch/pytorch
-```
-
 ## PySlowFast
 
 Clone the PySlowFast Video Understanding repository.
 ```
-git clone https://github.com/facebookresearch/slowfast
+git clone git@github.com:shapes-a1/SlowFast.git
 ```
 
 Add this repository to $PYTHONPATH.
@@ -44,7 +37,6 @@ export PYTHONPATH=/path/to/SlowFast/slowfast:$PYTHONPATH
 
 After having the above dependencies, run:
 ```
-git clone https://github.com/facebookresearch/slowfast
 cd SlowFast
 python setup.py build develop
 ```

@@ -12,7 +12,6 @@ setup(
     install_requires=[
         "yacs>=0.1.6",
         "pyyaml>=5.1",
-        "av",
         "matplotlib",
         "termcolor>=1.1",
         "simplejson",
