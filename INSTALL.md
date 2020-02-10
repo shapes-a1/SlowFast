@@ -9,10 +9,10 @@
     # Assuming Linux with anaconda - 
 
     # if CUDA == 10.0
-    conda install pytorch torchvision cudatoolkit=10.0 -c pytorch
+    conda install pytorch=1.3.1 torchvision=0.4.2 cudatoolkit=10.0 -c pytorch
     
     # if CUDA == 10.1
-    conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
+    conda install pytorch=1.3.1 torchvision=0.4.2 cudatoolkit=10.1 -c pytorch
 ``` 
 - [fvcore](https://github.com/facebookresearch/fvcore/): `pip install 'git+https://github.com/facebookresearch/fvcore'`
 - simplejson: `pip install simplejson`
